@@ -2,6 +2,7 @@ import sys
 import pygame
 from settings import Settings
 from ship import Ship
+from example_ufo import Ufo
 
 class AlienInvasion:
 	#Класс для управления ресурсами и поведением игры.
@@ -18,22 +19,56 @@ class AlienInvasion:
 
 		self.ship = Ship(self)
 
+		#Тест
+		self.ufo = Ufo(self)
+
 	def run_game(self):
 		#Запуск основного цикла игры.
-
 		while True:
-			#Отслеживание событий клавиатуры и мыши.
-
-			for event in pygame.event.get():
+			self._check_events()
+			self.ship.update()
+			self._update_screen()
+		
+	def _check_events(self):
+		#Обрабатывает нажатия клавиш и события мыши.
+		for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					sys.exit()
+				elif event.type == pygame.KEYDOWN:
+					self._check_keydown_events(event)
+				elif event.type == pygame.KEYUP:
+					self._check_ketup_events(event)
 
-			#При каждом проходе цикла перерисовывается экран
-			self.screen.fill(self.settings.bg_color)
-			self.ship.blitme()
+	def _check_keydown_events(self, event):
+		#Реагирует на нажатие клавиш
+		if event.key == pygame.K_RIGHT:
+			self.ship.moving_right = True
+		elif event.key == pygame.K_LEFT:
+			self.ship.moving_left = True
+		elif event.key == pygame.K_q:
+			sys.exit()
 
-			#Отображение последнего прорисованного экрана.
-			pygame.display.flip()
+	def _check_ketup_events(self, event):
+		#Реагирует на отпускание клавиш
+		if event.key == pygame.K_RIGHT:
+			self.ship.moving_right = False
+		elif event.key == pygame.K_LEFT:
+			self.ship.moving_left = False	
+
+					
+
+	def _update_screen(self):
+		#Обновляет изображения на экране и отображает новый экран
+
+		#При каждом проходе цикла перерисовывается экран
+		self.screen.fill(self.settings.bg_color)
+		self.ship.blitme()
+		self.ufo.blitme()
+
+		#Отображение последнего прорисованного экрана.
+		pygame.display.flip()
+
+
 
 if __name__ == '__main__':
 	#Создание экземпляра и запуск игры.
