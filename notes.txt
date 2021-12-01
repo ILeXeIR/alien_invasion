@@ -1,3 +1,6 @@
-Каталог изображений
+﻿Каталог изображений
 http://pixabay.com/
+
+Документация pygame
+https://www.pygame.org/docs/
 
