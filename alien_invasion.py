@@ -3,7 +3,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet 
-from example_ufo import Ufo
+from alien import Alien 
 
 class AlienInvasion:
 	#Класс для управления ресурсами и поведением игры.
@@ -25,16 +25,16 @@ class AlienInvasion:
 		"""
 		self.ship = Ship(self)
 		self.bullets = pygame.sprite.Group()
+		self.aliens = pygame.sprite.Group()
 
-		#Тест
-		self.ufo = Ufo(self)
+		self._create_fleet()
 
 	def run_game(self):
 		#Запуск основного цикла игры.
 		while True:
 			self._check_events()
 			self.ship.update()
-			self.bullets.update()
+			self._update_bullets()
 			self._update_screen()
 		
 	def _check_events(self):
@@ -67,8 +67,21 @@ class AlienInvasion:
 
 	def _fire_bullet(self):
 		#Создание нового снаряда и вкючение его в группу bullets
-		new_bullet = Bullet(self)
-		self.bullets.add(new_bullet)
+		if len(self.bullets) < self.settings.bullet_allowed:
+			new_bullet = Bullet(self)
+			self.bullets.add(new_bullet)
+
+	def _update_bullets(self):
+		#Обновление позиции снарядов и уничтожение вышедших за экран.
+		self.bullets.update()
+		for bullet in self.bullets.copy():
+				if bullet.rect.bottom <= 0:
+					self.bullets.remove(bullet)
+
+	def _create_fleet(self):
+		#Создаем флот вторжения.
+		alien = Alien(self)
+		self.aliens.add(alien)
 
 	def _update_screen(self):
 		#Обновляет изображения на экране и отображает новый экран
@@ -78,7 +91,7 @@ class AlienInvasion:
 		self.ship.blitme()
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet()
-		self.ufo.blitme()
+		self.aliens.draw(self.screen)
 
 		#Отображение последнего прорисованного экрана.
 		pygame.display.flip()
