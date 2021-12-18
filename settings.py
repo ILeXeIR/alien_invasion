@@ -11,9 +11,10 @@ class Settings():
 		
 		#Параметры корабля
 		self.ship_speed = 2
+		self.ship_limit = 3
 
 		#Параметры пули
-		self.bullet_speed = 1
+		self.bullet_speed = 2
 		self.bullet_width = 3
 		self.bullet_height = 15
 		self.bullet_color = (60, 60, 60)
@@ -24,6 +25,6 @@ class Settings():
 		self.fleet_drop_speed = 10
 		self.fleet_direction = 1
 		#fleet_direction = 1 для движения вправо и -1 для движения влево
-		
+
 
 

@@ -1,6 +1,8 @@
 import sys
 import pygame
+from time import sleep
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet 
 from alien import Alien 
@@ -23,6 +25,7 @@ class AlienInvasion:
 				self.screen = pygame.display.set_mode(
 					(self.settings.screen_width, self.settings.screen_height))
 		"""
+		self.stats = GameStats(self)
 		self.ship = Ship(self)
 		self.bullets = pygame.sprite.Group()
 		self.aliens = pygame.sprite.Group()
@@ -33,9 +36,10 @@ class AlienInvasion:
 		#Запуск основного цикла игры.
 		while True:
 			self._check_events()
-			self.ship.update()
-			self._update_bullets()
-			self._update_aliens()
+			if self.stats.game_active:
+				self.ship.update()
+				self._update_bullets()
+				self._update_aliens()
 			self._update_screen()
 		
 	def _check_events(self):
@@ -78,16 +82,52 @@ class AlienInvasion:
 		for bullet in self.bullets.copy():
 				if bullet.rect.bottom <= 0:
 					self.bullets.remove(bullet)
+		self._check_bullet_alien_collisions()
 
+	def _check_bullet_alien_collisions(self):
 		#Проверка попаданий в пришельцев.
 		#При обнаружении попадания удалить снаряд и пришельца.
 		collisions = pygame.sprite.groupcollide(
 						self.bullets, self.aliens, True, True)
 
+		#При уничтожении всех пришельцев уничтожает все пули, создает новый флот
+		if not self.aliens:
+			self.bullets.empty()
+			self._create_fleet()
+
 	def _update_aliens(self):
 		#Обновление позиции всех пришельцев
 		self._check_fleet_edges()
 		self.aliens.update()
+		#Проверка коллизий пришельцев с кораблем
+		if pygame.sprite.spritecollideany(self.ship, self.aliens):
+			self._ship_hit()
+		#Проверка, добрались ли пришельцы до нижнего края экрана
+		self._check_aliens_bottom()
+
+	def _check_aliens_bottom(self):
+		#Проверка, добрались ли пришельцы до нижнего края экрана
+		screen_rect = self.screen.get_rect()
+		for alien in self.aliens.sprites():
+			if alien.rect.bottom >= screen_rect.bottom:
+				print('bottom')
+				self._ship_hit()
+				break
+
+	def _ship_hit(self):
+		#Обрабатывает столкновение корабля с пришельцами:
+		#Уменьшение ship_left, очистка пришельцев и снарядов,
+		#создание нового флота, размещение корабля в центре, пауза в игре.
+		if self.stats.ships_left > 0:
+			self.stats.ships_left -= 1
+			self.aliens.empty()
+			self.bullets.empty()
+			self._create_fleet()
+			self.ship.center_ship()
+			sleep(0.5)
+		else:
+			self.stats.game_active = False
+
 
 	def _create_fleet(self):
 		#Создаем флот пришельцев.
