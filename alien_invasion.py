@@ -35,6 +35,7 @@ class AlienInvasion:
 			self._check_events()
 			self.ship.update()
 			self._update_bullets()
+			self._update_aliens()
 			self._update_screen()
 		
 	def _check_events(self):
@@ -78,6 +79,16 @@ class AlienInvasion:
 				if bullet.rect.bottom <= 0:
 					self.bullets.remove(bullet)
 
+		#Проверка попаданий в пришельцев.
+		#При обнаружении попадания удалить снаряд и пришельца.
+		collisions = pygame.sprite.groupcollide(
+						self.bullets, self.aliens, True, True)
+
+	def _update_aliens(self):
+		#Обновление позиции всех пришельцев
+		self._check_fleet_edges()
+		self.aliens.update()
+
 	def _create_fleet(self):
 		#Создаем флот пришельцев.
 		#Создание пришельца и вычисление количества пришельцев в ряду.
@@ -107,6 +118,19 @@ class AlienInvasion:
 		alien.rect.x = alien.x
 		alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
 		self.aliens.add(alien)
+
+	def _check_fleet_edges(self):
+		#Реагирует на достичение пришельцем края экрана.
+		for alien in self.aliens.sprites():
+			if alien.check_edges():
+				self._change_fleet_direction()
+				break
+
+	def _change_fleet_direction(self):
+		#Опускает весь флот и меняет направление флота.
+		for alien in self.aliens.sprites():
+			alien.rect.y += self.settings.fleet_drop_speed
+		self.settings.fleet_direction *= -1
 
 	def _update_screen(self):
 		#Обновляет изображения на экране и отображает новый экран

@@ -4,3 +4,6 @@ http://pixabay.com/
 Документация pygame
 https://www.pygame.org/docs/
 
+
+Выолнить упражнение 13.2 стр. 277
+

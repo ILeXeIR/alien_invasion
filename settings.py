@@ -19,4 +19,11 @@ class Settings():
 		self.bullet_color = (60, 60, 60)
 		self.bullet_allowed = 3
 
+		#Параметры пришельцев
+		self.alien_speed = 1.0
+		self.fleet_drop_speed = 10
+		self.fleet_direction = 1
+		#fleet_direction = 1 для движения вправо и -1 для движения влево
+		
+
 
