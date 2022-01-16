@@ -7,6 +7,7 @@ from button import Button
 from ship import Ship
 from bullet import Bullet 
 from alien import Alien 
+from scoreboard import Scoreboard
 
 class AlienInvasion:
 	#Класс для управления ресурсами и поведением игры.
@@ -27,6 +28,7 @@ class AlienInvasion:
 					(self.settings.screen_width, self.settings.screen_height))
 		"""
 		self.stats = GameStats(self)
+		self.sb = Scoreboard(self)
 		self.ship = Ship(self)
 		self.bullets = pygame.sprite.Group()
 		self.aliens = pygame.sprite.Group()
@@ -67,8 +69,10 @@ class AlienInvasion:
 			self._start_new_game()
 
 	def _start_new_game(self):
+		self.settings.initialize_dynamic_settings()
 		self.stats.reset_stats()
 		self.stats.game_active = True
+		self.sb.prep_score()
 		self.aliens.empty()
 		self.bullets.empty()
 		self._create_fleet()
@@ -117,10 +121,16 @@ class AlienInvasion:
 		collisions = pygame.sprite.groupcollide(
 						self.bullets, self.aliens, True, True)
 
+		if collisions:
+			for aliens in collisions.values():
+				self.stats.score += self.settings.alien_points * len(aliens)
+			self.sb.prep_score()
+
 		#При уничтожении всех пришельцев уничтожает все пули, создает новый флот
 		if not self.aliens:
 			self.bullets.empty()
 			self._create_fleet()
+			self.settings.increase_speed()
 
 	def _update_aliens(self):
 		#Обновление позиции всех пришельцев
@@ -208,6 +218,9 @@ class AlienInvasion:
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet()
 		self.aliens.draw(self.screen)
+
+		#Вывод счета на экран
+		self.sb.show_score()
 
 		#Кнопка Play отображается в том случае, если игра неактивна.
 		if not self.stats.game_active:
