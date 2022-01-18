@@ -125,6 +125,7 @@ class AlienInvasion:
 			for aliens in collisions.values():
 				self.stats.score += self.settings.alien_points * len(aliens)
 			self.sb.prep_score()
+			self.sb.check_high_score()
 
 		#При уничтожении всех пришельцев уничтожает все пули, создает новый флот
 		if not self.aliens:
