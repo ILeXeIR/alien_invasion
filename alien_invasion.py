@@ -73,6 +73,8 @@ class AlienInvasion:
 		self.stats.reset_stats()
 		self.stats.game_active = True
 		self.sb.prep_score()
+		self.sb.prep_level()
+		self.sb.prep_ships()
 		self.aliens.empty()
 		self.bullets.empty()
 		self._create_fleet()
@@ -133,6 +135,10 @@ class AlienInvasion:
 			self._create_fleet()
 			self.settings.increase_speed()
 
+			#Увеличение уровня.
+			self.stats.level += 1
+			self.sb.prep_level()
+
 	def _update_aliens(self):
 		#Обновление позиции всех пришельцев
 		self._check_fleet_edges()
@@ -157,6 +163,7 @@ class AlienInvasion:
 		#создание нового флота, размещение корабля в центре, пауза в игре.
 		if self.stats.ships_left > 0:
 			self.stats.ships_left -= 1
+			self.sb.prep_ships()
 			self.aliens.empty()
 			self.bullets.empty()
 			self._create_fleet()
@@ -165,6 +172,7 @@ class AlienInvasion:
 		else:
 			self.stats.game_active = False
 			pygame.mouse.set_visible(True)
+			self.stats.new_record(self.stats.score)
 
 
 	def _create_fleet(self):
