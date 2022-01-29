@@ -2,7 +2,7 @@ import pygame
 from pygame.sprite import Sprite
 
 class Bullet(Sprite):
-	#Класс ля управления снарядами, выпущенными кораблем.
+	#Класс для управления снарядами, выпущенными кораблем.
 
 	def __init__(self, ai_game):
 		#Создает объект снаряда в текущей позиции корабля

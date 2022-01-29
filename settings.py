@@ -18,12 +18,18 @@ class Settings():
 		self.bullet_color = (60, 60, 60)
 		self.bullet_allowed = 3
 
+		#Параметры пули пришельцев
+		self.alien_bullet_width = 2
+		self.alien_bullet_height = 10
+		self.alien_bullet_color = (160, 20, 20)
+		#self.alien_bullet_allowed = 3
+
 		#Параметры пришельцев
 		self.fleet_drop_speed = 10
 
 
 		#Темп усорения игры
-		self.speedup_scale = 1.3
+		self.speedup_scale = 1.2
 
 		#Темп роста стоимости пришельцев
 		self.score_scale = 1.5
@@ -35,6 +41,7 @@ class Settings():
 		#Инициализирует настройки, изменяющиеся в ходе игры.
 		self.ship_speed = 1.5
 		self.bullet_speed = 3.0
+		self.alien_bullet_speed = 0.3
 		self.alien_speed = 0.7
 		self.fleet_direction = 1
 		#fleet_direction = 1 для движения вправо и -1 для движения влево
@@ -45,8 +52,9 @@ class Settings():
 
 	def increase_speed(self):
 		#Увеличение настройки скорости и стоимости пришельцев.
-		self.ship_speed *= self.speedup_scale
+		#self.ship_speed *= self.speedup_scale
 		self.bullet_speed *= self.speedup_scale
+		self.alien_bullet_speed *= self.speedup_scale
 		self.alien_speed *= self.speedup_scale
 
 		self.alien_points = int(self.alien_points * self.score_scale)
