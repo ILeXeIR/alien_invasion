@@ -8,7 +8,7 @@ from button import Button
 from ship import Ship
 from bullet import Bullet 
 from bullet_alien import AlienBullet
-from alien import Alien 
+from alien import Alien
 from scoreboard import Scoreboard
 
 class AlienInvasion:
@@ -146,13 +146,20 @@ class AlienInvasion:
 
 	def _check_bullet_alien_collisions(self):
 		#Проверка попаданий в пришельцев.
-		#При обнаружении попадания удалить снаряд и пришельца.
+		#При обнаружении попадания удалить снаряд и пришельцев без щита.
+		#У пришельцев с щитом уменьшает значение щита на 1 и меняет цвет пришельца
 		collisions = pygame.sprite.groupcollide(
-						self.bullets, self.aliens, True, True)
+						self.bullets, self.aliens, True, False)
 
 		if collisions:
 			for aliens in collisions.values():
 				self.stats.score += self.settings.alien_points * len(aliens)
+				for alien in aliens:
+					if alien.shield > 0:
+						alien.shield -= 1
+						alien.change_color()
+					else:
+						alien.kill()
 			self.sb.prep_score()
 			self.sb.check_high_score()
 
@@ -160,12 +167,13 @@ class AlienInvasion:
 		if not self.aliens:
 			self.bullets.empty()
 			self.alien_bullets.empty()
-			self._create_fleet()
-			self.settings.increase_speed()
 
 			#Увеличение уровня.
 			self.stats.level += 1
 			self.sb.prep_level()
+			
+			self._create_fleet()
+			self.settings.increase_speed()			
 
 	def _update_aliens(self):
 		#Обновление позиции всех пришельцев
@@ -227,12 +235,24 @@ class AlienInvasion:
 
 	def _creat_alien(self, alien_number, row_number):
 		#Создание пришельца и размещение его в ряду
-		alien = Alien(self)
+		alien = Alien(self, self.shield_generator())
 		alien_width, alien_height = alien.rect.size 
 		alien.x = alien_width + 2 * alien_width * alien_number
 		alien.rect.x = alien.x
 		alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
 		self.aliens.add(alien)
+
+	def shield_generator(self):
+		#Случайный генератор щитов у пришельцев
+		x = random.randint(0, 999)
+		blue_level = (self.stats.level - 1) * 100
+		purple_level = (blue_level - 100) / 2
+		if x < purple_level:
+			return 2
+		elif x < blue_level:
+			return 1
+		else:
+			return 0
 
 	def _check_fleet_edges(self):
 		#Реагирует на достичение пришельцем края экрана.
